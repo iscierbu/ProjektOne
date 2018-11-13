@@ -5,6 +5,7 @@ let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let date = require('date-and-time');
 let fs = require('fs');
+let port = process.env.PORT || 3000;
 
 let users = [];
 let usernames = [];
@@ -102,7 +103,7 @@ io.on('connection', function (socket) {
 });
 
 
-http.listen(3000, function () {
+http.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
 });
 
