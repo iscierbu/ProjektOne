@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!-- Author : Mehmet Altuntas 741294, Burak Iscier 761336  -->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>MeBu</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen" />
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="/js/script.js"></script>
+</head>
+
+<body>
+  <div id="particles-js">
+    <script src="/js/particles.min.js"></script>
+    <script src="/js/app.js"></script>
+  </div>
+  <div class="main">
+    <article id="dlogin" class=" bg-white-50 z-4 br3 ba b--black-10 mv6 w-100 w-100-m w-100-l mw6 shadow-5 center">
+      <main class="pa4 black-80  ">
+        <div class="measure">
+          <legend class="f1 fw6 ph0 mh0">Welcome </legend>
+          <div class="mt3">
+            <label class="db fw6 lh-copy f6">
+              Username
+            </label>
+          </div>
+          </fieldset>
+          <div class="">
+            <form id="flogin" action="">
+              <input id="u" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
+              <button id="log" class="myA b ph3 pv2 input-reset ba b--black bg-transparent center grow pointer f6 dib">LogIn</button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </article>
+    <div id="dchat">
+      <article class="vh-20 dt w-100 bg-white-90 borderBottomStyle">
+        <div class="dtc v-mid tc  ph3 ph4-l">
+          <h1 class="f2 f2-m  fw6 tc">MeBu</h1>
+          <p id='usrnme'> Username </p>
+          <form id='flogout' name='flogout' action="">
+            <input type="image" src='img/logout.png' alt='submit' id='logout'>
+          </form>
+
+        </div>
+      </article>
+      <div class="cf bg-white-90 ph3 ph5-ns pv5">
+        <header id='aside' class="fn fl-ns w-20-ns pr4-ns">
+          <a id="groupchat" onclick="groupChat()">
+            <h1 class="mb3 mt0 lh-title">Groupchat</h1>
+          </a>
+          <ul id='groupmember' class="f6 tracked gray">
+          </ul>
+          <div id='groups' class="f6 tracked gray"></div>
+          <br>
+          <h1 class="mb3 mt0 lh-title">Private Chat:</h1>
+          <div id='chatprivate' class="f6 tracked gray"></div>
+        </header>
+        <div class="fn fl-ns pl6-ns w-80">
+          <div class="lh-copy" id='memberchat'>
+            <ul id="messages" class="pad-left"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="chatBox">
+        <div id="upload">
+          <i class="fas fa-upload"></i>
+          <input id="fileInput" type="file" />
+        </div>
+        <form id="fsend" action="">
+          <input id="m" type="text" placeholder="write something">
+          <button type="submit" id="send" class="senden fas fa-arrow-alt-circle-right" value="Send"> Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
