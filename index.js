@@ -4,12 +4,21 @@ let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let date = require('date-and-time');
+let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let fs = require('fs');
 let port = process.env.PORT || 3000;
 
 let users = [];
 let usernames = [];
 let unique = 0;
+
+let toneAnalyzer = new ToneAnalyzerV3({
+  version_date: '2017-09-21',
+  username: 'aa9742c6-e129-45be-a628-d51f744e76af',
+  password: 'QUzBsczCdB7S',
+  url: 'https://gateway-fra.watsonplatform.net/tone-analyzer/api'
+});
+
 
 app.use('/', express.static(__dirname + '/app'));
 app.get('/', function (req, res) {
@@ -53,12 +62,29 @@ io.on('connection', function (socket) {
   socket.on('priv message', function (msg) {
     if (users[msg[1]] != undefined) {
       if (msg[2][3] === "file") {
-        console.log(msg[0] + msg[1] + msg[2][1])
+        console.log(msg[0] + msg[1] + msg[2][1]);
+        users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+        users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
       } else {
         console.log(msg);
+        var toneParams = {
+          'tone_input': {'text': msg[2]},
+          'content_type': 'application/json'
+        }
+        toneAnalyzer.tone(toneParams, (err, response) => {
+          var feeling ="";
+          if (err) {
+            console.log(err);
+          } else{
+            if(!(response.document_tone.tones[0] == null)){
+              feeling = " ("+ response.document_tone.tones[0].tone_id+ ")";
+            }
+          }
+          msg[2] = msg[2] + feeling;
+          users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+          users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+        });
       }
-      users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
-      users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
     }
   });
   /**
@@ -71,15 +97,32 @@ io.on('connection', function (socket) {
  */
   //
   socket.on('chat message', function (msg) {
+    
     if (msg === "/list") {
       socket.emit('list users', usernames);
     } else {
       if (msg[3] === "file") {
         console.log('Chat: ' + socket.name + ': ' + msg[1]);
+        io.emit('chat message', [socket.name, msg, time()]);
       } else {
         console.log('Chat: ' + socket.name + ': ' + msg);
+        var toneParams = {
+          'tone_input': {'text': msg},
+          'content_type': 'application/json'
+        }
+        toneAnalyzer.tone(toneParams, (err, response) => {
+          var feeling ="";
+          if (err) {
+            console.log(err);
+          }else{
+            if(!(response.document_tone.tones[0] == null)){
+              feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
+            }
+          }
+          msg = msg + feeling;
+          io.emit('chat message', [socket.name, msg, time()]);
+        });
       }
-      io.emit('chat message', [socket.name, msg, time()]);
     }
   });
 
