@@ -10,6 +10,7 @@ $(function () {
   var socket = io();
 
   $('#dchat').hide();
+  $('#fregist').hide();
 
   /**
  * reaction of login button
@@ -251,3 +252,12 @@ function chatlist() {
     }
   }
 };
+
+function signIn(){
+  $('#fregist').hide();
+  $('#flogin').show();
+}
+function signUp(){
+  $('#flogin').hide();
+  $('#fregist').show();
+}

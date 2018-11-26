@@ -22,7 +22,7 @@ let toneAnalyzer = new ToneAnalyzerV3({
 
 app.use('/', express.static(__dirname + '/app'));
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/app/index.html');
+  res.redirect('https://' + req.headers.host + req.url);
 });
 
 /**

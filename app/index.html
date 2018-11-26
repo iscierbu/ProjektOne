@@ -25,17 +25,25 @@
       <main class="pa4 black-80  ">
         <div class="measure">
           <legend class="f1 fw6 ph0 mh0">Welcome </legend>
-          <div class="mt3">
-            <label class="db fw6 lh-copy f6">
-              Username
-            </label>
-          </div>
+          <a class="f4 fw6 ph0 mh0" onclick="signIn()">Sign In</a> | <a class="f4 fw6 ph0 mh0"onclick="signUp()"> Sign Up</a><br><br>
           </fieldset>
           <div class="">
             <form id="flogin" action="">
+              <label class="db fw6 lh-copy f6">Username</label>
               <input id="u" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
+              <label class="db fw6 lh-copy f6">Password</label>
+              <input id="p" type="password" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
               <button id="log" class="myA b ph3 pv2 input-reset ba b--black bg-transparent center grow pointer f6 dib">LogIn</button>
             </form>
+            <form id="fregist" action="">
+                <label class="db fw6 lh-copy f6">Username</label>
+                <input id="nu" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
+                <label class="db fw6 lh-copy f6">Password</label>
+                <input id="np" type="password" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
+                <label class="db fw6 lh-copy f6">Repeat Password</label>
+                <input id="np2" type="password" autocomplete="off" class="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" /><br><br>
+                <button id="signUp" class="myA b ph3 pv2 input-reset ba b--black bg-transparent center grow pointer f6 dib">Sign Up</button>
+              </form>
           </div>
         </div>
       </main>
