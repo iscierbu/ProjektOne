@@ -6,7 +6,7 @@ let io = require('socket.io')(http);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
-let bcrypt = require('bcrypt');
+let bcrypt   = require('bcrypt-nodejs');
 helmet = require('helmet');
 let port = process.env.PORT || 3000;
 
