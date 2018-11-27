@@ -6,7 +6,7 @@ let io = require('socket.io')(http);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
-let bcrypt   = require('bcrypt-nodejs');
+var passwordHash = require('password-hash');
 helmet = require('helmet');
 let port = process.env.PORT || 3000;
 
@@ -53,8 +53,7 @@ io.on('connection', function (socket) {
  */
   socket.on('login', function (msg) {
     con.query("SELECT * FROM users where (name = '"+msg[0]+"')", function (err, result, fields) {
-      console.log(bcrypt.compareSync(result[0].password, msg[1]));
-    if(bcrypt.compareSync(msg[1], result[0].password)){
+    if(passwordHash.verify(msg[1], result[0].password)){
       if (err || result.length<1){
         socket.emit('loginmessage',"Username or Password incorrect");
       }else{
@@ -75,7 +74,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('regist', function (msg) {
-    bcrypt.hash(msg[1].toString(), 10, function(err, hash){
+    var hash = passwordHash.generate(msg[1]);
     var sql = "INSERT INTO users (name, password) VALUES ('"+msg[0]+"', '"+hash+"')";
     con.query(sql, function (err, result) {
       if (err){
@@ -84,7 +83,6 @@ io.on('connection', function (socket) {
         socket.emit('registmessage',"Registration successful");
       }
     });
-  });
   });
 /**
  * receive and send private messages and files in an array

@@ -37,9 +37,6 @@ $(function () {
 
   $('#fregist').submit(function () {
     var namReg = new RegExp(/^[a-zA-Z0-9].{4,20}$/);
-    console.log($('#nu').val());
-    console.log($('#nu').val().match(namReg));
-    console.log($('#np').val().match(namReg));
    if ($('#nu').val().match(namReg) != null && $('#np').val().match(namReg) != null && $('#np').val() == $('#np2').val()){
       socket.emit('regist', [$('#nu').val(),$('#np').val(),$('#np2').val()]);
     }else{
