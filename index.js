@@ -57,7 +57,7 @@ io.on('connection', function (socket) {
       if (err || result.length<1){
         socket.emit('loginmessage',"Username or Password incorrect");
       }else{
-        if(socket.name != msg[0]){
+        if(users[msg[0]] == undefined){
         socket.name = msg[0];
         users[msg[0]] = socket;
         usernames.push(msg[0]);
