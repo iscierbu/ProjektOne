@@ -5,7 +5,6 @@ let http = require('http').Server(app);
 let io = require('socket.io')(http);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
-let fs = require('fs');
 let mysql = require('mysql');
 let bcrypt = require('bcrypt');
 helmet = require('helmet')
