@@ -6,11 +6,10 @@ let io = require('socket.io')(http);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let fs = require('fs');
+let mysql = require('mysql');
+let bcrypt = require('bcrypt');
+helmet = require('helmet')
 let port = process.env.PORT || 3000;
-
-let users = [];
-let usernames = [];
-let unique = 0;
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
@@ -19,11 +18,26 @@ let toneAnalyzer = new ToneAnalyzerV3({
   url: 'https://gateway-fra.watsonplatform.net/tone-analyzer/api'
 });
 
+var con = mysql.createConnection({
+  host: "sl-eu-fra-2-portal.5.dblayer.com",
+  port: "18351",
+  user: "admin",
+  password: "e639c3fbee03bb9fe0b4febc945547e15e5b45815e3faae88dc",
+  database: "compose"
+});
 
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected to Database!");
+});
+app.use(helmet());
 app.use('/', express.static(__dirname + '/app'));
 app.get('/', function (req, res) {
   res.redirect('https://' + req.headers.host + req.url);
 });
+
+let users = [];
+let usernames = [];
 
 /**
  * creates a connection with the client
@@ -38,17 +52,40 @@ io.on('connection', function (socket) {
  * @param {*} msg
  * @returns
  */
-  socket.on('username', function (msg) {
-    if (users[msg] != undefined) {
-      msg = msg + unique++;
+  socket.on('login', function (msg) {
+    con.query("SELECT * FROM users where (name = '"+msg[0]+"')", function (err, result, fields) {
+      console.log(bcrypt.compareSync(result[0].password, msg[1]));
+    if(bcrypt.compareSync(msg[1], result[0].password)){
+      if (err || result.length<1){
+        socket.emit('loginmessage',"Username or Password incorrect");
+      }else{
+        if(socket.name != msg[0]){
+        socket.name = msg[0];
+        users[msg[0]] = socket;
+        usernames.push(msg[0]);
+        console.log(time() + ' ' + socket.name + ' is connected ');
+        socket.emit('loginsucc', socket.name);
+        io.emit('chat message', ['Login', socket.name, time()]);
+        io.emit('online users', usernames);
+      }
+      }
+    }else{
+      socket.emit('loginmessage',"Username or Password incorrect");
     }
-    socket.name = msg;
-    users[msg] = socket;
-    usernames.push(msg);
-    console.log(time() + ' ' + socket.name + ' is connected ');
-    socket.emit('username', socket.name);
-    io.emit('chat message', ['Login', socket.name, time()]);
-    io.emit('online users', usernames);
+    });
+  });
+
+  socket.on('regist', function (msg) {
+    bcrypt.hash(msg[1].toString(), 10, function(err, hash){
+    var sql = "INSERT INTO users (name, password) VALUES ('"+msg[0]+"', '"+hash+"')";
+    con.query(sql, function (err, result) {
+      if (err){
+        socket.emit('registmessage',"Username already taken");
+      }else{
+        socket.emit('registmessage',"Registration successful");
+      }
+    });
+  });
   });
 /**
  * receive and send private messages and files in an array

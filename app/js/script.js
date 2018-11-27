@@ -8,7 +8,6 @@ var private = "no";
 
 $(function () {
   var socket = io();
-
   $('#dchat').hide();
   $('#fregist').hide();
 
@@ -22,14 +21,41 @@ $(function () {
   $('#flogin').submit(function () {
     check = $('#u').val().split('<');
     if ($('#u').val().length > 0 && $('#u').val().split(' ').length<2 && $('#u').val()!=' ' && check.length<2) {
-      socket.emit('username', $('#u').val());
-      $('#dlogin').hide();
-      $('#dchat').show();
+      socket.emit('login', [$('#u').val(),$('#p').val()]);
       return false;
     }else{
       alert('dont use whitespace and html tags');
     }
   });
+
+  socket.on('loginsucc', function (msg) {
+    $('#dlogin').hide();
+    $('#dchat').show();
+    $('#usrnme').html(msg);
+    return false;
+  });
+
+  $('#fregist').submit(function () {
+    var namReg = new RegExp(/^[a-zA-Z0-9].{4,20}$/);
+    console.log($('#nu').val());
+    console.log($('#nu').val().match(namReg));
+    console.log($('#np').val().match(namReg));
+   if ($('#nu').val().match(namReg) != null && $('#np').val().match(namReg) != null && $('#np').val() == $('#np2').val()){
+      socket.emit('regist', [$('#nu').val(),$('#np').val(),$('#np2').val()]);
+    }else{
+      alert('Username or Password not correct');
+    }
+   return false;
+  });
+
+  socket.on('loginmessage', function (msg) {
+    alert(msg);
+  });
+
+  socket.on('registmessage', function (msg) {
+    alert(msg);
+  });
+
   /**
   * reaction of send button
   * check if file is loaded or a message wrote
@@ -175,13 +201,8 @@ $(function () {
     chatlist();
   });
 
-  //get username
-  socket.on("username", function (msg) {
-    $('#usrnme').html(msg);
-  });
-
   //logout
-  $('#flogout').on('Submit', function () {
+  $('#flogout').on('submit', function () {
     socket.emit('disconnect');
   });
 
