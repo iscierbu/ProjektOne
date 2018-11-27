@@ -7,7 +7,7 @@ let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
 let bcrypt = require('bcrypt');
-helmet = require('helmet')
+helmet = require('helmet');
 let port = process.env.PORT || 3000;
 
 let toneAnalyzer = new ToneAnalyzerV3({
