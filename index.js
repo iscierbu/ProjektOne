@@ -29,6 +29,13 @@ app.use(session({
 );
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    styleSrc: ["'self'", 'maxcdn.bootstrapcdn.com']
+  }
+}));
+
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
   username: 'aa9742c6-e129-45be-a628-d51f744e76af',
