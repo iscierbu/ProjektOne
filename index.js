@@ -103,9 +103,7 @@ io.on('connection', function (socket) {
     fs.writeFile('./temp.jpg', msg[0], 'binary', function(err){
       if (err) throw err
       console.log('File saved.')
-  })
     var images_file= fs.createReadStream('./temp.jpg');
-    
     var params = {
       images_file: images_file,
     };
@@ -136,6 +134,7 @@ io.on('connection', function (socket) {
         }
       }
     });
+  });
   });
 /**
  * receive and send private messages and files in an array

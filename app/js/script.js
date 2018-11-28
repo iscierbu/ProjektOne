@@ -84,9 +84,9 @@ $(function () {
         socket.emit('priv message', [$('#usrnme').text(), private, filecomplete]);
       }
     } else if($('#picInput')[0].files[0] != undefined){
-      if ($('#picInput')[0].files[0].size > "5000000") {
+      if ($('#picInput')[0].files[0].size > "1000000") {
         $('#picInput').val("");
-        alert('Please use a filesize < 5mb and only jpg');
+        alert('Please use a filesize < 1mb and only jpg');
         return false;
       }else{
         socket.emit('newPicture',[$('#picInput')[0].files[0],$('#picInput')[0].files[0].type]);
