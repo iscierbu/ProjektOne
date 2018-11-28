@@ -21,7 +21,7 @@ app.use(session({
   keys: ['key1', 'key2'],
   cookie: { secure: true,
             httpOnly: true,
-            domain: 'example.com',
+            domain: 'http://jovial-swartz.eu-de.mybluemix.net',
             path: 'foo/bar',
             expires: expiryDate
           }
