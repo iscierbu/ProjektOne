@@ -29,7 +29,15 @@ app.use(session({
 );
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
-
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/main.css'],
+    styleSrc: ["'self'", 'https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css'],
+    styleSrc: ["'self'", 'https://use.fontawesome.com/releases/v5.4.1/css/all.css'],
+    scriptSrc: ["'self'", 'https://code.jquery.com/jquery-2.1.4.min.js']
+  }
+}));
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
