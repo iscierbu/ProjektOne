@@ -1,8 +1,8 @@
 // Author : Mehmet Altuntas 741294, Burak Iscier 761336
 let express = require('express');
 let app = express();
-let https = require('https').Server(app);
-let io = require('socket.io')(https);
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -259,7 +259,7 @@ io.on('connection', function (socket) {
 });
 
 
-https.listen(port, function () {
+http.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
 });
 
