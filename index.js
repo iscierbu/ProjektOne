@@ -1,8 +1,8 @@
 // Author : Mehmet Altuntas 741294, Burak Iscier 761336
 let express = require('express');
 let app = express();
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
+let https = require('https').Server(app);
+let io = require('socket.io')(https);
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -10,7 +10,24 @@ let VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3'
 let passwordHash = require('password-hash');
 let helmet = require('helmet');
 let fs = require('fs'); 
+var session = require('cookie-session');
 let port = process.env.PORT || 3000;
+
+//security
+app.disable('x-powered-by');
+var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+app.use(session({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  cookie: { secure: true,
+            httpOnly: true,
+            domain: 'example.com',
+            path: 'foo/bar',
+            expires: expiryDate
+          }
+  })
+);
+app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
@@ -235,7 +252,7 @@ io.on('connection', function (socket) {
 });
 
 
-http.listen(port, function () {
+https.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
 });
 
