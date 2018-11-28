@@ -33,9 +33,9 @@ app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
     styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/main.css'],
-    styleSrc: ["'self'", 'https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css'],
-    styleSrc: ["'self'", 'https://use.fontawesome.com/releases/v5.4.1/css/all.css'],
-    scriptSrc: ["'self'", 'https://code.jquery.com/jquery-2.1.4.min.js']
+    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/tachyons.min.css'],
+    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/fontawesome.css'],
+    scriptSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/js/jquery-2.1.4.min.js'],
   }
 }));
 
