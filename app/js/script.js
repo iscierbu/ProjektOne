@@ -31,7 +31,11 @@ $(function () {
   socket.on('loginsucc', function (msg) {
     $('#dlogin').hide();
     $('#dchat').show();
-    $('#usrnme').html(msg);
+    $('#usrnme').html(msg[0]);
+    if(msg[1] != null){
+      console.log(msg[1]);
+      $("#pic").attr("src", URL.createObjectURL(createFileBlob([msg[1],"profilpic",[msg[2]]])));
+    }
     return false;
   });
 
@@ -69,7 +73,6 @@ $(function () {
         alert('Please use a filesize < 5mb');
         return false;
       }
-      console.log($('#fileInput')[0].files[0]);
       var file = $('#fileInput')[0].files[0];
       file.name = $('#fileInput')[0].files[0].name;
       file.type = $('#fileInput')[0].files[0].type;
@@ -80,7 +83,17 @@ $(function () {
       } else {
         socket.emit('priv message', [$('#usrnme').text(), private, filecomplete]);
       }
-    } else if ($('#m').val().length < 1) {
+    } else if($('#picInput')[0].files[0] != undefined){
+      if ($('#picInput')[0].files[0].size > "5000000") {
+        $('#picInput').val("");
+        alert('Please use a filesize < 5mb and only jpg');
+        return false;
+      }else{
+        socket.emit('newPicture',[$('#picInput')[0].files[0],$('#picInput')[0].files[0].type]);
+        $('#picInput').val("");
+      }
+   }else if ($('#m').val().length < 1) {
+
     } else {
       $('#m').val($('#m').val().split("<").toString());
       $('#m').val($('#m').val().split(">").toString());
@@ -129,6 +142,12 @@ $(function () {
     }
   });
 
+  socket.on('changepic', function (msg) {
+    console.log(msg[0]);
+
+    $("#pic").attr("src", URL.createObjectURL(createFileBlob([msg[0],"profilpic",msg[1]])));
+  });
+
   /**
    * get list of users as a message
    *
@@ -167,7 +186,6 @@ $(function () {
    * @returns
    */
   socket.on("priv message", function (msg) {
-    console.log(msg);
     var formatmsg = '<li>' + msg[3] + " - " + msg[0] + ": ";
     if (msg[2][3] === "file") {
       formatmsg = formatmsg + '<a href="' + URL.createObjectURL(createFileBlob(msg[2])) + '" target="_blank">' + msg[2][1] + '</a></li>';
@@ -180,10 +198,8 @@ $(function () {
         privatenotif[msg[0]] = 1;
         privatechats[msg[0]] = ('<li> Privatechat with ' + msg[0] + formatmsg);
       } else {
-        console.log(privatenotif[msg[0]]);
         privatenotif[msg[0]] = ++privatenotif[msg[0]];
         privatechats[msg[0]] = privatechats[msg[0]] + formatmsg;
-        console.log(privatenotif[msg[0]]);
       }
       if (private === msg[0]) {
         $('#messages').html(privatechats[msg[0]]);
@@ -214,7 +230,6 @@ $(function () {
  */
 function createFileBlob(file) {
   var file = new File([new Blob([new Uint8Array(file[0])])], file[1], { type: file[2] });
-  console.log(file);
   return file;
 }
 
@@ -279,3 +294,4 @@ function signUp(){
   $('#flogin').hide();
   $('#fregist').show();
 }
+
