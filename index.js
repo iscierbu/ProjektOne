@@ -31,11 +31,7 @@ app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
-    defaultSrc: ["'self'"],
-    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/main.css'],
-    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/tachyons.min.css'],
-    styleSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/css/fontawesome.css'],
-    scriptSrc: ["'self'", 'https://jovial-swartz.eu-de.mybluemix.net/js/jquery-2.1.4.min.js'],
+    defaultSrc: ["'self'"]
   }
 }));
 
