@@ -142,8 +142,6 @@ $(function () {
   });
 
   socket.on('changepic', function (msg) {
-    console.log(msg[0]);
-
     $("#pic").attr("src", URL.createObjectURL(createFileBlob([msg[0],"profilpic",msg[1]])));
   });
 
