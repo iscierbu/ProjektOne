@@ -28,6 +28,9 @@ app.use(session({
   })
 );
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
+app.use(helmet.hsts({
+  maxAge: 5184000
+}));
 
 
 
