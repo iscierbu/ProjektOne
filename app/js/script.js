@@ -33,7 +33,6 @@ $(function () {
     $('#dchat').show();
     $('#usrnme').html(msg[0]);
     if(msg[1] != null){
-      console.log(msg[1]);
       $("#pic").attr("src", URL.createObjectURL(createFileBlob([msg[1],"profilpic",[msg[2]]])));
     }
     return false;
