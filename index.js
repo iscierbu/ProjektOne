@@ -29,11 +29,7 @@ app.use(session({
 );
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    defaultSrc: ["'self'"]
-  }
-}));
+
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
