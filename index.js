@@ -14,9 +14,26 @@ var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
 //security
-app.disable('x-powered-by');
 var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
-app.use(session({
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    scriptSrc: ["'self'","'ws://localhost:3000/socket.io/'", "'unsafe-inline'"],
+    fontSrc: ["'self'"],
+    imgSrc: ["'self'"],
+    sandbox: ['allow-forms', 'allow-scripts'],
+    objectSrc: ["'none'"],
+    upgradeInsecureRequests: true,
+    workerSrc: false
+  },
+  setAllHeaders: true,
+}),
+helmet.referrerPolicy({ policy: 'same-origin' }),
+helmet.hsts({maxAge: 5184000}),
+helmet.hidePoweredBy(),
+helmet.noCache(),
+session({
   name: 'session',
   keys: ['key1', 'key2'],
   cookie: { secure: true,
@@ -27,10 +44,7 @@ app.use(session({
           }
   })
 );
-app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
-app.use(helmet.hsts({
-  maxAge: 5184000
-}));
+
 
 
 
@@ -60,7 +74,6 @@ con.connect(function(err) {
   if (err) throw err;
   console.log("Connected to Database!");
 });
-app.use(helmet());
 app.use('/', express.static(__dirname + '/app'));
 app.get('/', function (req, res) {
   res.redirect('https://' + req.headers.host + req.url);
