@@ -9,11 +9,16 @@ let mysql = require('mysql');
 let VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 let passwordHash = require('password-hash');
 let helmet = require('helmet');
-let fs = require('fs'); 
+let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
 //security
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(helmet.contentSecurityPolicy({
   directives: {
@@ -23,7 +28,7 @@ app.use(helmet.contentSecurityPolicy({
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
     connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/'],
-    sandbox: ['allow-forms', 'allow-scripts'],
+    sandbox: ['allow-forms', 'allow-scripts', 'allow-modals'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
     workerSrc: false
@@ -37,6 +42,7 @@ helmet.noCache(),
 helmet.noSniff(),
 helmet.xssFilter(),
 helmet.ieNoOpen(),
+helmet.frameguard({ action: 'sameorigin' }),
 session({
   name: 'session',
   keys: ['key1', 'key2'],
