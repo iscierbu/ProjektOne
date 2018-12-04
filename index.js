@@ -22,7 +22,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'",'blob:'],
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
-    connectSrc: ["'self'", 'data:','https:','ws://localhost:3000/'],
+    connectSrc: ["'self'", 'data:','https:'],
     sandbox: ['allow-forms', 'allow-scripts'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
