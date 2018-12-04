@@ -22,7 +22,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'",'blob:'],
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
-    connectSrc: ["'self'", 'data:','https:'],
+    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/'],
     sandbox: ['allow-forms', 'allow-scripts'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
