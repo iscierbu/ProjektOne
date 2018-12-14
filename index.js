@@ -13,8 +13,9 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
-const redis = require('socket.io-redis');
-io.adapter(redis({ host: 'rediss://admin:QUNABPRIZENQKDXX@sl-us-south-1-portal.47.dblayer.com', port: 18483 }));
+const redis = require('redis');
+const {promisify} = require('util');
+const client = redis.createClient(18483);
 
 //security
 app.use(function(req, res, next) {
