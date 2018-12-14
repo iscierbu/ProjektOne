@@ -18,14 +18,16 @@ var numCPUs = require('os').cpus().length;
 
 if (cluster.isMaster) {
   // Fork workers.
-  for (var i = 0; i < 2; i++) {
+  for (var i = 0; i < numCPUs; i++) {
       cluster.fork();
   }
 
   // Emit a message every second
   function send() {
-      
+      io.sockets.emit('chat message', ['cluster', 'tick', time()]);
   }
+
+  setInterval(send, 1000);
 
 
   cluster.on('exit', function(worker, code, signal) {
