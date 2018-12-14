@@ -1,5 +1,5 @@
 ---
 applications:
 - name: jovial-swartz
-  memory: 512M
-  instances: 1
+  memory: 384M
+  instances: 2
