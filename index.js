@@ -12,10 +12,27 @@ let helmet = require('helmet');
 let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
 
-const redis = require('redis');
-const {promisify} = require('util');
-const client = redis.createClient(18483);
+
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i < 2; i++) {
+      cluster.fork();
+  }
+
+  // Emit a message every second
+  function send() {
+      
+  }
+
+
+  cluster.on('exit', function(worker, code, signal) {
+      console.log('worker ' + worker.process.pid + ' died');
+  }); 
+}
+
 
 //security
 app.use(function(req, res, next) {
@@ -33,7 +50,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'",'blob:'],
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
-    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/','rediss://admin:QUNABPRIZENQKDXX@sl-us-south-1-portal.47.dblayer.com' ],
+    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/'],
     sandbox: ['allow-forms', 'allow-scripts', 'allow-modals'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
