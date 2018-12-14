@@ -1,24 +1,4 @@
 // Author : Mehmet Altuntas 741294, Burak Iscier 761336
-var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
-
-
-if (cluster.isMaster) {
-  masterProcess();
-} else {
-  childProcess();  
-}
-
-function masterProcess() {
-  console.log(`Master ${process.pid} is running`);
-
-  for (let i = 0; i < numCPUs; i++) {
-    console.log(`Forking process number ${i}...`);
-    cluster.fork();
-  }
-}
-
-function childProcess() {
 let express = require('express');
 let app = express();
 let http = require('http').Server(app);
@@ -32,6 +12,7 @@ let helmet = require('helmet');
 let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
+
 //security
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/");
@@ -313,5 +294,4 @@ http.listen(port, function () {
    */
 function time() {
   return date.format(new Date(), 'HH:mm:ss / DD.MM.YYYY', false);
-}
 }
