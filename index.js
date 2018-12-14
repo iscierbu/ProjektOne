@@ -13,6 +13,9 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
+const redis = require('socket.io-redis');
+io.adapter(redis({ host: 'rediss://admin:QUNABPRIZENQKDXX@sl-us-south-1-portal.47.dblayer.com', port: 18483 }));
+
 //security
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/");
@@ -29,7 +32,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'",'blob:'],
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
-    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/'],
+    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/','rediss://admin:QUNABPRIZENQKDXX@sl-us-south-1-portal.47.dblayer.com' ],
     sandbox: ['allow-forms', 'allow-scripts', 'allow-modals'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
