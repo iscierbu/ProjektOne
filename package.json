@@ -10,8 +10,6 @@
   "author": "Mehmet_Altuntas_741294; Burak_Iscier_761336",
   "license": "ISC",
   "dependencies": {
-    "assert": "^1.4.1",
-    "cfenv": "^1.1.0",
     "cookie-session": "^2.0.0-beta.3",
     "date-and-time": "^0.6.2",
     "express": "^4.16.4",
@@ -20,8 +18,8 @@
     "password-hash": "^1.2.2",
     "redis": "^2.8.0",
     "socket.io": "^2.1.1",
+    "socket.io-redis": "^5.2.0",
     "streamifier": "^0.1.1",
-    "util": "^0.11.1",
     "watson-developer-cloud": "^3.13.0"
   },
   "repository": {

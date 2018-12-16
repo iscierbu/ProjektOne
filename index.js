@@ -7,8 +7,8 @@ let io = require('socket.io')(http, {
 	pingInterval: 25000,
   pingTimeout: 60000,
 });
-let assert = require('assert');
-let util = require('util');
+const redis = require('redis');
+let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -19,58 +19,11 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
+const pub = redis.createClient('18978', 'portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com', { auth_pass: "EZPXYCIVMXXYVFAU" });
+const sub = redis.createClient('18978', 'portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com', { auth_pass: "EZPXYCIVMXXYVFAU" });
 
-// Configure Redis client connection
-var redis = require('redis');
-// Now lets get cfenv and ask it to parse the environment variable
-let cfenv = require('cfenv');
-
-// load local VCAP configuration  and service credentials
-let vcapLocal;
-try {
-  vcapLocal = require('./vcap-local.json');
-  console.log("Loaded local VCAP");
-} catch (e) { 
-    // console.log(e)
-}
-
-const appEnvOpts = vcapLocal ? { vcap: vcapLocal} : {}
-const appEnv = cfenv.getAppEnv(appEnvOpts);
-
-// Within the application environment (appenv) there's a services object
-let services = appEnv.services;
-
-// The services object is a map named by service so we extract the one for Redis
-let redis_services = services["compose-for-redis"];
-
-// This check ensures there is a services for Redis databases
-assert(!util.isUndefined(redis_services), "Must be bound to compose-for-redis services");
-
-// We now take the first bound Redis service and extract it's credentials object
-let credentials = redis_services[0].credentials;
-
-let connectionString = credentials.uri;
-
-let client = null;
-
-if (connectionString.startsWith("rediss://")) {
-    // If this is a rediss: connection, we have some other steps.
-    client = redis.createClient(connectionString, {
-        tls: { servername: new URL(connectionString).hostname }
-    });
-    // This will, with node-redis 2.8, emit an error:
-    // "node_redis: WARNING: You passed "rediss" as protocol instead of the "redis" protocol!"
-    // This is a bogus message and should be fixed in a later release of the package.
-} else {
-    client = redis.createClient(connectionString);
-}
-
-client.on("error", function(err) {
-    console.log("Error " + err);
-});
-
-
-client.subscribe('login','regist','priv message','chat message','disconnect');
+io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
+//client.subscribe('login','regist','priv message','chat message','disconnect');
 
 //security
 app.use(function(req, res, next) {
@@ -115,8 +68,6 @@ session({
           }
   })
 );
-
-
 
 
 let toneAnalyzer = new ToneAnalyzerV3({
@@ -181,11 +132,11 @@ io.on('connection', function (socket) {
         if(temppic != null){
           temppic = new Buffer(result[0].imgdata, 'base64');
         }
-        client.publish('chat message', ['Login', socket.name, time()]);
-        client.publish('online users', usernames);
+        //client.publish('chat message', ['Login', socket.name, time()]);
+        //client.publish('online users', usernames);
         socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
-        //io.emit('chat message', ['Login', socket.name, time()]);
-        //io.emit('online users', usernames);
+        io.emit('chat message', ['Login', socket.name, time()]);
+        io.emit('online users', usernames);
       }
       
     }else{
@@ -195,9 +146,9 @@ io.on('connection', function (socket) {
     });
   });
 
-  client.on('message', function (channel, message) {
-    io.emit('chat message', message);
-  });
+  //client.on('message', function (channel, message) {
+  //  io.emit('chat message', message);
+  //});
 
   socket.on('regist', function (msg) {
     var hash = passwordHash.generate(msg[1]);
