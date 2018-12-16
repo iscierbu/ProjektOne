@@ -20,8 +20,12 @@ let port = process.env.PORT || 3000;
 
 // Configure Redis client connection
 
-var redis = new Redis('rediss://admin:EZPXYCIVMXXYVFAU@portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com:18978')
+var redis = new Redis('rediss://admin:EZPXYCIVMXXYVFAU@portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com:18978');
 
+redis.subscribe('login','regist','priv message','chat message','disconnect', function (err, count) {
+  // Now we are subscribed to both the 'news' and 'music' channels.
+  // `count` represents the number of channels we are currently subscribed to.
+});
 
 //security
 app.use(function(req, res, next) {
@@ -132,9 +136,11 @@ io.on('connection', function (socket) {
         if(temppic != null){
           temppic = new Buffer(result[0].imgdata, 'base64');
         }
+        redis.publish('chat message', ['Login', socket.name, time()]);
+        redis.publish('online users', usernames);
         socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
-        io.emit('chat message', ['Login', socket.name, time()]);
-        io.emit('online users', usernames);
+        //io.emit('chat message', ['Login', socket.name, time()]);
+        //io.emit('online users', usernames);
       }
       
     }else{
@@ -142,6 +148,40 @@ io.on('connection', function (socket) {
     }
   }
     });
+  });
+
+  redis.on('message', function (channel, message) {
+    if(channel == 'chat message'){
+      var msg = message;
+        if (msg === "/list") {
+          socket.emit('list users', usernames);
+        } else {
+          if (msg[3] === "file") {
+            console.log('Chat: ' + socket.name + ': ' + msg[1]);
+            io.emit('chat message', [socket.name, msg, time()]);
+          } else {
+            console.log('Chat: ' + socket.name + ': ' + msg);
+            var toneParams = {
+              'tone_input': {'text': msg},
+              'content_type': 'application/json'
+            }
+            toneAnalyzer.tone(toneParams, (err, response) => {
+              var feeling ="";
+              if (err) {
+                console.log(err);
+              }else{
+                if(!(response.document_tone.tones[0] == null)){
+                  feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
+                }
+              }
+              msg = msg + feeling;
+              io.emit('chat message', [socket.name, msg + ': redis', time()]);
+            });
+          }
+        }
+    }
+    // Receive message Hello again! from channel music
+    console.log('Receive message %s from channel %s', message, channel);
   });
 
   socket.on('regist', function (msg) {
