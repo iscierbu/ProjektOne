@@ -19,17 +19,9 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
-// parsing rediscloud credentials
-var vcap_services = process.env.VCAP_SERVICES;
-var rediscloud_service = JSON.parse(vcap_services)["Compose for Redis-c9"][0]
-var credentials = rediscloud_service.credentials;
 
-
-
-const pub = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
-pub.auth(credentials.password);
-const sub = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
-sub.auth(credentials.password);
+const pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+const sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
