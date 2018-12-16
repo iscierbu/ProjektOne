@@ -19,8 +19,17 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
-const pub = redis.createClient('18978', 'portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com', { auth_pass: "EZPXYCIVMXXYVFAU" });
-const sub = redis.createClient('18978', 'portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com', { auth_pass: "EZPXYCIVMXXYVFAU" });
+// parsing rediscloud credentials
+var vcap_services = process.env.VCAP_SERVICES;
+var rediscloud_service = JSON.parse(vcap_services)["Compose for Redis-c9"][0]
+var credentials = rediscloud_service.credentials;
+
+
+
+const pub = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
+pub.auth(credentials.password);
+const sub = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
+sub.auth(credentials.password);
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
