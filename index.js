@@ -7,7 +7,8 @@ let io = require('socket.io')(http, {
 	pingInterval: 25000,
   pingTimeout: 60000,
 });
-var redis = require('redis');
+let assert = require('assert');
+let util = require('util');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -18,30 +19,58 @@ let fs = require('fs');
 var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
-// Configure Redis client connection
 
 // Configure Redis client connection
+var redis = require('redis');
+// Now lets get cfenv and ask it to parse the environment variable
+let cfenv = require('cfenv');
 
-var credentials;
-// Check if we are in Bluemix or localhost
-if(process.env.VCAP_SERVICES) {
-// On Bluemix read connection settings from
-// VCAP_SERVICES environment variable
-var env = JSON.parse(process.env.VCAP_SERVICES);
-credentials = env['redis-4.0.10'][0]['credentials'];
+// load local VCAP configuration  and service credentials
+let vcapLocal;
+try {
+  vcapLocal = require('./vcap-local.json');
+  console.log("Loaded local VCAP");
+} catch (e) { 
+    // console.log(e)
+}
+
+const appEnvOpts = vcapLocal ? { vcap: vcapLocal} : {}
+const appEnv = cfenv.getAppEnv(appEnvOpts);
+
+// Within the application environment (appenv) there's a services object
+let services = appEnv.services;
+
+// The services object is a map named by service so we extract the one for Redis
+let redis_services = services["compose-for-redis"];
+
+// This check ensures there is a services for Redis databases
+assert(!util.isUndefined(redis_services), "Must be bound to compose-for-redis services");
+
+// We now take the first bound Redis service and extract it's credentials object
+let credentials = redis_services[0].credentials;
+
+let connectionString = credentials.uri;
+
+let client = null;
+
+if (connectionString.startsWith("rediss://")) {
+    // If this is a rediss: connection, we have some other steps.
+    client = redis.createClient(connectionString, {
+        tls: { servername: new URL(connectionString).hostname }
+    });
+    // This will, with node-redis 2.8, emit an error:
+    // "node_redis: WARNING: You passed "rediss" as protocol instead of the "redis" protocol!"
+    // This is a bogus message and should be fixed in a later release of the package.
 } else {
-// On localhost just hardcode the connection details
-credentials = { "host": "127.0.0.1", "port": 6379 }
-}
-// Connect to Redis
-var redisClient = redis.createClient(credentials.port, credentials.host);
-if('password' in credentials) {
-// On Bluemix we need to authenticate against Redis
-redisClient.auth(credentials.password);
+    client = redis.createClient(connectionString);
 }
 
+client.on("error", function(err) {
+    console.log("Error " + err);
+});
 
-redisClient.subscribe('login','regist','priv message','chat message','disconnect');
+
+client.subscribe('login','regist','priv message','chat message','disconnect');
 
 //security
 app.use(function(req, res, next) {
@@ -152,8 +181,8 @@ io.on('connection', function (socket) {
         if(temppic != null){
           temppic = new Buffer(result[0].imgdata, 'base64');
         }
-        redis.publish('chat message', ['Login', socket.name, time()]);
-        redis.publish('online users', usernames);
+        client.publish('chat message', ['Login', socket.name, time()]);
+        client.publish('online users', usernames);
         socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
         //io.emit('chat message', ['Login', socket.name, time()]);
         //io.emit('online users', usernames);
@@ -166,7 +195,7 @@ io.on('connection', function (socket) {
     });
   });
 
-  redis.on('message', function (channel, message) {
+  client.on('message', function (channel, message) {
     io.emit('chat message', message);
   });
 
