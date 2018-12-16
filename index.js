@@ -7,6 +7,7 @@ let io = require('socket.io')(http, {
 	'pingInterval': 40000,
 	'pingTimeout': 25000
 });
+//var Redis = require('ioredis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -18,23 +19,9 @@ var session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
 // Configure Redis client connection
-var redis = require('socket.io-redis');
-var credentials;
-// Check if we are in Bluemix or localhost
-if(process.env.VCAP_SERVICES) {
-// On Bluemix read connection settings from
-// VCAP_SERVICES environment variable
-var env = JSON.parse(process.env.VCAP_SERVICES);
-credentials = env['redis-4.0.10'][0]['credentials'];
-} else {
-// On localhost just hardcode the connection details
-credentials = { "host": "127.0.0.1", "port": 6379 }
-}
-io.adapter(redis({ host:credentials.host, port:  credentials.port}));
-if('password' in credentials) {
-// On Bluemix we need to authenticate against Redis
-redisClient.auth(credentials.password);
- }
+
+//var redis = new Redis();
+
 
 //security
 app.use(function(req, res, next) {
