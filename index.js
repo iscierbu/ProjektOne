@@ -7,7 +7,7 @@ let io = require('socket.io')(http, {
 	pingInterval: 25000,
   pingTimeout: 60000,
 });
-var Redis = require('ioredis');
+var redis = require('redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -20,12 +20,28 @@ let port = process.env.PORT || 3000;
 
 // Configure Redis client connection
 
-var redis = new Redis('rediss://admin:EZPXYCIVMXXYVFAU@portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com:18978');
+// Configure Redis client connection
 
-redis.subscribe('login','regist','priv message','chat message','disconnect', function (err, count) {
-  // Now we are subscribed to both the 'news' and 'music' channels.
-  // `count` represents the number of channels we are currently subscribed to.
-});
+var credentials;
+// Check if we are in Bluemix or localhost
+if(process.env.VCAP_SERVICES) {
+// On Bluemix read connection settings from
+// VCAP_SERVICES environment variable
+var env = JSON.parse(process.env.VCAP_SERVICES);
+credentials = env['redis-4.0.10'][0]['credentials'];
+} else {
+// On localhost just hardcode the connection details
+credentials = { "host": "127.0.0.1", "port": 6379 }
+}
+// Connect to Redis
+var redisClient = redis.createClient(credentials.port, credentials.host);
+if('password' in credentials) {
+// On Bluemix we need to authenticate against Redis
+redisClient.auth(credentials.password);
+}
+
+
+redisClient.subscribe('login','regist','priv message','chat message','disconnect');
 
 //security
 app.use(function(req, res, next) {
@@ -108,44 +124,6 @@ app.get('/', function (req, res) {
 let users = [];
 let usernames = [];
 
-redis.on('message', function (channel, message) {
-  if(channel == 'chat message'){
-    var msg = message;
-      if (msg === "/list") {
-        socket.emit('list users', usernames);
-      } else {
-        if (msg[3] === "file") {
-          console.log('Chat: ' + socket.name + ': ' + msg[1]);
-          io.emit('chat message', [socket.name, msg, time()]);
-        } else {
-          console.log('Chat: ' + socket.name + ': ' + msg);
-          var toneParams = {
-            'tone_input': {'text': msg},
-            'content_type': 'application/json'
-          }
-          toneAnalyzer.tone(toneParams, (err, response) => {
-            var feeling ="";
-            if (err) {
-              console.log(err);
-            }else{
-              if(!(response.document_tone.tones[0] == null)){
-                feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
-              }
-            }
-            msg = msg + feeling;
-            io.emit('chat message', [socket.name, msg + ': redis', time()]);
-          });
-        }
-      }
-  }
-  // Receive message Hello again! from channel music
-  console.log('Receive message %s from channel %s', message, channel);
-});
-
-
-
-
-
 /**
  * creates a connection with the client
  *
@@ -188,7 +166,9 @@ io.on('connection', function (socket) {
     });
   });
 
-  
+  redis.on('message', function (channel, message) {
+    io.emit('chat message', message);
+  });
 
   socket.on('regist', function (msg) {
     var hash = passwordHash.generate(msg[1]);
@@ -313,10 +293,6 @@ io.on('connection', function (socket) {
       }
     }
   });
-
-  function detectFace(img) {
-    
-}
 
   /**
    * if the connection closed
