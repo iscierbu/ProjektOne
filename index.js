@@ -4,10 +4,10 @@ let app = express();
 let http = require('http').Server(app);
 //let pathio = '/' + makeid();
 let io = require('socket.io')(http, {
-	'pingInterval': 40000,
-	'pingTimeout': 25000
+	pingInterval: 25000,
+  pingTimeout: 60000,
 });
-//var Redis = require('ioredis');
+var Redis = require('ioredis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 let mysql = require('mysql');
@@ -20,7 +20,7 @@ let port = process.env.PORT || 3000;
 
 // Configure Redis client connection
 
-//var redis = new Redis();
+var redis = new Redis('rediss://admin:EZPXYCIVMXXYVFAU@portal125-10.bmix-eude-yp-709986d2-2dfc-4ad5-a275-bd2c21b47e6e.630663971.composedb.com:18978')
 
 
 //security
