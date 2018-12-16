@@ -108,6 +108,44 @@ app.get('/', function (req, res) {
 let users = [];
 let usernames = [];
 
+redis.on('message', function (channel, message) {
+  if(channel == 'chat message'){
+    var msg = message;
+      if (msg === "/list") {
+        socket.emit('list users', usernames);
+      } else {
+        if (msg[3] === "file") {
+          console.log('Chat: ' + socket.name + ': ' + msg[1]);
+          io.emit('chat message', [socket.name, msg, time()]);
+        } else {
+          console.log('Chat: ' + socket.name + ': ' + msg);
+          var toneParams = {
+            'tone_input': {'text': msg},
+            'content_type': 'application/json'
+          }
+          toneAnalyzer.tone(toneParams, (err, response) => {
+            var feeling ="";
+            if (err) {
+              console.log(err);
+            }else{
+              if(!(response.document_tone.tones[0] == null)){
+                feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
+              }
+            }
+            msg = msg + feeling;
+            io.emit('chat message', [socket.name, msg + ': redis', time()]);
+          });
+        }
+      }
+  }
+  // Receive message Hello again! from channel music
+  console.log('Receive message %s from channel %s', message, channel);
+});
+
+
+
+
+
 /**
  * creates a connection with the client
  *
@@ -150,39 +188,7 @@ io.on('connection', function (socket) {
     });
   });
 
-  redis.on('message', function (channel, message) {
-    if(channel == 'chat message'){
-      var msg = message;
-        if (msg === "/list") {
-          socket.emit('list users', usernames);
-        } else {
-          if (msg[3] === "file") {
-            console.log('Chat: ' + socket.name + ': ' + msg[1]);
-            io.emit('chat message', [socket.name, msg, time()]);
-          } else {
-            console.log('Chat: ' + socket.name + ': ' + msg);
-            var toneParams = {
-              'tone_input': {'text': msg},
-              'content_type': 'application/json'
-            }
-            toneAnalyzer.tone(toneParams, (err, response) => {
-              var feeling ="";
-              if (err) {
-                console.log(err);
-              }else{
-                if(!(response.document_tone.tones[0] == null)){
-                  feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
-                }
-              }
-              msg = msg + feeling;
-              io.emit('chat message', [socket.name, msg + ': redis', time()]);
-            });
-          }
-        }
-    }
-    // Receive message Hello again! from channel music
-    console.log('Receive message %s from channel %s', message, channel);
-  });
+  
 
   socket.on('regist', function (msg) {
     var hash = passwordHash.generate(msg[1]);
