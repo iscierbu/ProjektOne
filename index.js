@@ -28,7 +28,7 @@ setInterval(function() {
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
-
+/** 
 //security
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/, ws://echo.websocket.org/");
@@ -73,7 +73,7 @@ session({
           }
   })
 );
-
+*/
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
@@ -108,14 +108,6 @@ app.get('/', function (req, res) {
 
 let users = [];
 let usernames = [];
-
-io.use((socket, next) => {
-  let token = socket.handshake.query.token;
-  if (isValid(token)) {
-    return next();
-  }
-  return next(new Error('authentication error'));
-});
 
 /**
  * creates a connection with the client
