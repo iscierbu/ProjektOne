@@ -122,30 +122,34 @@ io.on('connection', function (socket) {
       if (err || result.length<1){
         socket.emit('loginmessage',"Username or Password incorrect");
       }else{
-        if(passwordHash.verify(msg[1], result[0].password)){
-        if(users[msg[0]] == undefined){
-        socket.name = msg[0];
-        users[msg[0]] = socket;
-        //usernames.push(msg[0]);
-        
-        con.query("UPDATE users SET online = 1 WHERE name = '" + msg[0] + "'", function (err, result) {
-          if (err) throw err;
-          console.log(time() + ' ' + socket.name + ' is connected ');
-        });
-        var temppic = result[0].imgtype;
-        if(temppic != null){
-          temppic = new Buffer(result[0].imgdata, 'base64');
+        if(result[0].online == 1){
+          socket.emit('loginmessage',"You are logged in. Please contact the admin");
+        }else{
+          if(passwordHash.verify(msg[1], result[0].password)){
+            if(users[msg[0]] == undefined){
+            socket.name = msg[0];
+            users[msg[0]] = socket;
+            //usernames.push(msg[0]);
+            
+            con.query("UPDATE users SET online = 1 WHERE name = '" + msg[0] + "'", function (err, result) {
+              if (err) throw err;
+              console.log(time() + ' ' + socket.name + ' is connected ');
+            });
+            var temppic = result[0].imgtype;
+            if(temppic != null){
+              temppic = new Buffer(result[0].imgdata, 'base64');
+            }
+            //client.publish('chat message', ['Login', socket.name, time()]);
+            //client.publish('online users', usernames);
+            socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
+            io.emit('chat message', ['Login', socket.name, time()]);
+            ioEmitOnlineUsers();
+          }
+          
+        }else{
+          socket.emit('loginmessage',"Username or Password incorrect");
         }
-        //client.publish('chat message', ['Login', socket.name, time()]);
-        //client.publish('online users', usernames);
-        socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
-        io.emit('chat message', ['Login', socket.name, time()]);
-        ioEmitOnlineUsers();
-      }
-      
-    }else{
-      socket.emit('loginmessage',"Username or Password incorrect");
-    }
+        }
   }
     });
   });
