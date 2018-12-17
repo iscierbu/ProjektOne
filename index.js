@@ -16,10 +16,15 @@ let session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
 
-
-
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
 let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+
+setInterval(function() {
+  pub.writeHeader(204);
+  pub.end();
+  sub.writeHeader(204);
+  sub.end();
+ }, 60000);
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
