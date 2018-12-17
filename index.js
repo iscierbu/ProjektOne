@@ -22,16 +22,17 @@ let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
-
+/**
 //security
-//app.use(function(req, res, next) {
-//  res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/");
-//  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//  res.setHeader('Access-Control-Allow-Credentials', true);
-//  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-//  next();
-//});
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  next();
+});
 var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+
 app.use(helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
@@ -66,7 +67,7 @@ session({
           }
   })
 );
-
+**/
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
