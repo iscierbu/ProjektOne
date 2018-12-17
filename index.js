@@ -2,7 +2,6 @@
 let express = require('express');
 let app = express();
 let http = require('http').Server(app);
-//let pathio = '/' + makeid();
 let io = require('socket.io')(http, {
 	pingInterval: 25000,
   pingTimeout: 60000,
@@ -127,8 +126,12 @@ io.on('connection', function (socket) {
         if(users[msg[0]] == undefined){
         socket.name = msg[0];
         users[msg[0]] = socket;
-        usernames.push(msg[0]);
-        console.log(time() + ' ' + socket.name + ' is connected ');
+        //usernames.push(msg[0]);
+        
+        con.query("UPDATE users SET online = 1 WHERE name = '" + msg[0] + "'", function (err, result) {
+          if (err) throw err;
+          console.log(time() + ' ' + socket.name + ' is connected ');
+        });
         var temppic = result[0].imgtype;
         if(temppic != null){
           temppic = new Buffer(result[0].imgdata, 'base64');
@@ -137,7 +140,7 @@ io.on('connection', function (socket) {
         //client.publish('online users', usernames);
         socket.emit('loginsucc',[socket.name,temppic, result[0].imgtype]);
         io.emit('chat message', ['Login', socket.name, time()]);
-        io.emit('online users', usernames);
+        ioEmitOnlineUsers();
       }
       
     }else{
@@ -285,11 +288,26 @@ io.on('connection', function (socket) {
     if (users[socket.name] != undefined) {
       delete users[socket.name];
       usernames.splice(usernames.indexOf(socket.name), 1);
-      console.log(time() + ' ' + socket.name + ' is disconnected ');
+      con.query("UPDATE users SET online = 0 WHERE name = '" + socket.name + "'", function (err, result) {
+        if (err) throw err;
+        console.log(time() + ' ' + socket.name + ' is disconnected ');
+      });
       io.emit('chat message', ['Logout', socket.name, time()]);
-      io.emit('online users', usernames);
+      ioEmitOnlineUsers();
     }
   });
+
+  function ioEmitOnlineUsers() {
+    con.query("SELECT name FROM users where (online = '1')", function (err, result, fields) {
+      if (err) throw err;
+      usernames = [];
+      for (var i in result) {
+        usernames.push(result[i].name);
+      }
+      console.log(usernames);
+      io.emit('online users', usernames);
+    });
+  }
 
 
 });
@@ -309,12 +327,3 @@ function time() {
   return date.format(new Date(), 'HH:mm:ss / DD.MM.YYYY', false);
 }
 
-function makeid() {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (var i = 0; i < 5; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
-}
