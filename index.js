@@ -14,6 +14,7 @@ let helmet = require('helmet');
 let fs = require('fs');
 let session = require('cookie-session');
 let port = process.env.PORT || 3000;
+let sticky = require('sticky-session');
 
 
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
@@ -313,10 +314,14 @@ io.on('connection', function (socket) {
 
 });
 
-
-http.listen(port, function () {
-  console.log(time() + ' MeBu is listening on localhost:3000');
+sticky.listen(http,port, function()
+{
+    console.log('Server listening at port '+ port);
 });
+
+//http.listen(port, function () {
+//  console.log(time() + ' MeBu is listening on localhost:3000');
+//});
 
 /**
    * returns actual time with timecode for germany
