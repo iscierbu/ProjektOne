@@ -3,6 +3,7 @@ let express = require('express');
 let app = express();
 let http = require('http').Server(app);
 let redis = require('redis');
+let io = require('socket.io').listen(http);
 let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
@@ -315,7 +316,6 @@ io.on('connection', function (socket) {
 
 http.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
-  var io = require('socket.io').listen(http);
 });
 
 /**
