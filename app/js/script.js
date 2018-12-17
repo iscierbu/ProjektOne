@@ -7,7 +7,7 @@ var private = "no";
 
 
 $(function () {
-  var socket = io({transports: ['websocket']});
+  var socket = io();
   $('#dchat').hide();
   $('#fregist').hide();
 
