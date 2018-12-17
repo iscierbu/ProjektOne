@@ -7,7 +7,12 @@ var private = "no";
 
 
 $(function () {
-  var socket = io();
+  var socket = io({
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax : 5000,
+    reconnectionAttempts: 99999
+  });
   $('#dchat').hide();
   $('#fregist').hide();
 
