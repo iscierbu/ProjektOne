@@ -2,11 +2,6 @@
 let express = require('express');
 let app = express();
 let http = require('http').Server(app);
-let io = require('socket.io')(http, {
-  transports: [ 'websocket' ],
-	pingInterval: 25000,
-  pingTimeout: 60000,
-});
 let redis = require('redis');
 let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
@@ -17,7 +12,6 @@ let passwordHash = require('password-hash');
 let helmet = require('helmet');
 let fs = require('fs');
 let session = require('cookie-session');
-let agent = require('bluemix-autoscaling-agent');
 let port = process.env.PORT || 3000;
 
 
@@ -321,6 +315,7 @@ io.on('connection', function (socket) {
 
 http.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
+  var io = require('socket.io').listen(http);
 });
 
 /**
