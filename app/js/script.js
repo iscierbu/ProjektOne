@@ -11,7 +11,8 @@ $(function () {
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
-    reconnectionAttempts: 99999
+    reconnectionAttempts: 99999,
+    transports: ['websocket']
   });
   $('#dchat').hide();
   $('#fregist').hide();
