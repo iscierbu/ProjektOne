@@ -17,8 +17,8 @@ let passwordHash = require('password-hash');
 let helmet = require('helmet');
 let fs = require('fs');
 let session = require('cookie-session');
+let agent = require('bluemix-autoscaling-agent');
 let port = process.env.PORT || 3000;
-let sticky = require('socketio-sticky-session');
 
 
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
@@ -319,10 +319,8 @@ io.on('connection', function (socket) {
 });
 
 
-sticky(require('http').createServer(function(req, res) {
-  res.end('worker: ' + process.env.NODE_WORKER_ID);
-})).listen(port, function() {
-  console.log('server started on 3000 port');
+http.listen(port, function () {
+  console.log(time() + ' MeBu is listening on localhost:3000');
 });
 
 /**
