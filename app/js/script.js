@@ -7,7 +7,7 @@ var private = "no";
 
 
 $(function () {
-  var socket = io("wss://jovial-swartz.eu-de.mybluemix.net/",{transports: ['websocket']});
+  var socket = io({transports: ['websocket']});
   $('#dchat').hide();
   $('#fregist').hide();
 
