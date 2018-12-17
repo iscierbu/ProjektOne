@@ -6,7 +6,7 @@ let io = require('socket.io')(http, {
 	pingInterval: 25000,
   pingTimeout: 60000,
 });
-const redis = require('redis');
+let redis = require('redis');
 let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
@@ -15,12 +15,12 @@ let VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3'
 let passwordHash = require('password-hash');
 let helmet = require('helmet');
 let fs = require('fs');
-var session = require('cookie-session');
+let session = require('cookie-session');
 let port = process.env.PORT || 3000;
 
 
-const pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
-const sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
