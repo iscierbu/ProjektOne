@@ -1,9 +1,14 @@
 // Author : Mehmet Altuntas 741294, Burak Iscier 761336
 let express = require('express');
-let app = express();
-let http = require('http').Server(app);
+let app = express()
+  , http = require('http')
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server);
+
+//let app = express();
+//let http = require('http').Server(app);
 let redis = require('redis');
-let io = require('socket.io').listen(http);
+//let io = require('socket.io').listen(http);
 let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
@@ -14,6 +19,7 @@ let helmet = require('helmet');
 let fs = require('fs');
 let session = require('cookie-session');
 let port = process.env.PORT || 3000;
+
 
 
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
@@ -322,7 +328,7 @@ io.on('connection', function (socket) {
 });
 
 
-http.listen(port, function () {
+server.listen(port, function () {
   console.log(time() + ' MeBu is listening on localhost:3000');
 });
 
