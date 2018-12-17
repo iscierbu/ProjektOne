@@ -26,10 +26,6 @@ let session = require("express-session")({
 });
 let sharedsession = require("express-socket.io-session");
 
-io.use(sharedsession(session, {
-  autoSave:true
-})); 
-
 // Use express-session middleware for express
 app.use(session);
 
