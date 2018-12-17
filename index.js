@@ -3,6 +3,7 @@ let express = require('express');
 let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http, {
+  transports: [ 'websocket' ],
 	pingInterval: 25000,
   pingTimeout: 60000,
 });
@@ -15,25 +16,8 @@ let VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3'
 let passwordHash = require('password-hash');
 let helmet = require('helmet');
 let fs = require('fs');
-//let session = require('cookie-session');
+let session = require('cookie-session');
 let port = process.env.PORT || 3000;
-
-
-let session = require("express-session")({
-  secret: "my-secret",
-  resave: true,
-  saveUninitialized: true
-});
-let sharedsession = require("express-socket.io-session");
-
-// Use express-session middleware for express
-app.use(session);
-
-// Use shared session middleware for socket.io
-// setting autoSave:true
-io.of(('/socketiocookie'+(Math.floor(Math.random() * 9) + 1)) ).use(sharedsession(session, {
-  autoSave: true
-}));
 
 
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
@@ -74,6 +58,16 @@ helmet.noSniff(),
 helmet.xssFilter(),
 helmet.ieNoOpen(),
 helmet.frameguard({ action: 'sameorigin' }),
+session({
+  name: 'session',
+  keys: ['key1', 'key2'],
+  cookie: { secure: true,
+            httpOnly: true,
+            domain: 'http://jovial-swartz.eu-de.mybluemix.net',
+            path: 'foo/bar',
+            expires: expiryDate
+          }
+  })
 );
 
 
