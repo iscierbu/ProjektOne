@@ -3,7 +3,9 @@ let express = require('express');
 let app = express();
 let http = require('http').Server(app);
 let redis = require('redis');
-let io = require('socket.io').listen(http);
+let io = require('socket.io').listen(http, {
+  transports: [ 'websocket', 'polling' ]
+});
 let redisAdapter = require('socket.io-redis');
 let date = require('date-and-time');
 let ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
@@ -14,7 +16,6 @@ let helmet = require('helmet');
 let fs = require('fs');
 let session = require('cookie-session');
 let port = process.env.PORT || 3000;
-let sticky = require('sticky-session');
 
 
 let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
@@ -22,10 +23,10 @@ let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud
 
 io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
 //client.subscribe('login','regist','priv message','chat message','disconnect');
-/**
+
 //security
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/");
+  res.header("Access-Control-Allow-Origin", "https://jovial-swartz.eu-de.mybluemix.net/, ws://echo.websocket.org/");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
@@ -40,7 +41,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'",'blob:'],
     fontSrc: ["'self'"], 
     imgSrc: ["'self'", 'data:','https:','blob:'],
-    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/'],
+    connectSrc: ["'self'", 'data:','https:','wss://jovial-swartz.eu-de.mybluemix.net/socket.io/', 'ws://echo.websocket.org/'],
     sandbox: ['allow-forms', 'allow-scripts', 'allow-modals'],
     objectSrc: ["'none'"],
     upgradeInsecureRequests: true,
@@ -67,7 +68,7 @@ session({
           }
   })
 );
-**/
+
 
 let toneAnalyzer = new ToneAnalyzerV3({
   version_date: '2017-09-21',
