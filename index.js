@@ -216,6 +216,7 @@ io.on('connection', function (socket) {
  * @returns
  */
   socket.on('priv message', function (msg) {
+    checkInstances(msg[0],socket);
     var userfound= false;
     console.log(msg[1]);
     for (var i in usernames) {
@@ -260,16 +261,7 @@ io.on('connection', function (socket) {
  */
   //
   socket.on('chat message', function (msg) {
-    var userfound= false;
-    for (var i in usernames) {
-      if(usernames[i] == msg[0]){
-        userfound = true;
-      }
-    }
-    if(socket.name == null && userfound){
-      socket.name = msg[0];
-      users[msg[0]] = socket;
-    }
+    checkInstances(msg[0],socket);
     if (msg === "/list") {
       socket.emit('list users', usernames);
     } else {
@@ -346,3 +338,15 @@ function time() {
   return date.format(new Date(), 'HH:mm:ss / DD.MM.YYYY', false);
 }
 
+function checkInstances(username, socket){
+  var userfound= false;
+  for (var i in usernames) {
+    if(usernames[i] == username){
+      userfound = true;
+    }
+  }
+  if(socket.name == undefined && userfound){
+    socket.name = username;
+    users[username] = socket;
+  }
+}
