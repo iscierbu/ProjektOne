@@ -84,7 +84,7 @@ $(function () {
       var filecomplete = [file, $('#fileInput')[0].files[0].name, $('#fileInput')[0].files[0].type, "file"];
       $('#fileInput').val("");
       if (private === 'no') {
-        socket.emit('chat message', filecomplete);
+        socket.emit('chat message', [$('#usrnme').text(),filecomplete]);
       } else {
         socket.emit('priv message', [$('#usrnme').text(), private, filecomplete]);
       }

@@ -273,12 +273,12 @@ io.on('connection', function (socket) {
   //
   socket.on('chat message', function (msg) {
     checkInstances(msg[0],socket);
-    if (msg === "/list") {
+    if (msg[1] === "/list") {
       socket.emit('list users', usernames);
     } else {
       if (msg[3] === "file") {
         console.log('Chat: ' + socket.name + ': ' + msg[1]);
-        io.emit('chat message', [socket.name, msg, time()]);
+        io.emit('chat message', [socket.name, msg[1], time()]);
       } else {
         console.log('Chat: ' + socket.name + ': ' + msg);
         var toneParams = {
@@ -356,6 +356,7 @@ function checkInstances(username, socket){
       userfound = true;
     }
   }
+  console.log(userfound);
   if(socket.name == undefined && userfound){
     socket.name = username;
     users[username] = socket;
