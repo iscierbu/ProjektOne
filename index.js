@@ -217,19 +217,27 @@ io.on('connection', function (socket) {
  */
   socket.on('priv message', function (msg) {
     checkInstances(msg[0],socket);
-    var userfound= false;
+    var userfound1= false;
+    var userfound2= false;
     console.log(msg[1]);
     for (var i in usernames) {
         console.log('Online User: ' + usernames[i]);
+      if(usernames[i] == msg[0]){
+        userfound1 = true;
+      }
       if(usernames[i] == msg[1]){
-        userfound = true;
+        userfound2 = true;
       }
     }
-    if (userfound) {
+    if (userfound1 && userfound2) {
       if (msg[2][3] === "file") {
         console.log(msg[0] + msg[1] + msg[2][1]);
-        users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
-        users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+        if(users[msg[1]] != undefined){
+          users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+        }
+        if(users[msg[1]] != undefined){
+          users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+        }
       } else {
         var toneParams = {
           'tone_input': {'text': msg[2]},
@@ -245,8 +253,12 @@ io.on('connection', function (socket) {
             }
           }
           msg[2] = msg[2] + feeling;
-          users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
-          users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+          if(users[msg[1]] != undefined){
+            users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+          }
+          if(users[msg[1]] != undefined){
+            users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
+          }
         });
       }
     }
