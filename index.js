@@ -219,9 +219,7 @@ io.on('connection', function (socket) {
     checkInstances(msg[0],socket);
     var userfound1= false;
     var userfound2= false;
-    console.log(msg[1]);
     for (var i in usernames) {
-        console.log('Online User: ' + usernames[i]);
       if(usernames[i] == msg[0]){
         userfound1 = true;
       }
@@ -229,10 +227,11 @@ io.on('connection', function (socket) {
         userfound2 = true;
       }
     }
+    console.log(userfound1 + " - " + userfound2);
     if (userfound1 && userfound2) {
       if (msg[2][3] === "file") {
         console.log(msg[0] + msg[1] + msg[2][1]);
-        if(users[msg[1]] != undefined){
+        if(users[msg[0]] != undefined){
           users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
         }
         if(users[msg[1]] != undefined){
@@ -253,7 +252,7 @@ io.on('connection', function (socket) {
             }
           }
           msg[2] = msg[2] + feeling;
-          if(users[msg[1]] != undefined){
+          if(users[msg[0]] != undefined){
             users[msg[0]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
           }
           if(users[msg[1]] != undefined){
