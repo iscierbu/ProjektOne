@@ -216,7 +216,15 @@ io.on('connection', function (socket) {
  * @returns
  */
   socket.on('priv message', function (msg) {
-    if (users[msg[1]] != undefined) {
+    var userfound= false;
+    console.log(msg[1]);
+    for (var i in usernames) {
+        console.log('Online User: ' + usernames[i]);
+      if(usernames[i] == msg[1]){
+        userfound = true;
+      }
+    }
+    if (userfound) {
       if (msg[2][3] === "file") {
         console.log(msg[0] + msg[1] + msg[2][1]);
         users[msg[1]].emit('priv message', [msg[0], msg[1], msg[2], time()]);
@@ -252,7 +260,16 @@ io.on('connection', function (socket) {
  */
   //
   socket.on('chat message', function (msg) {
-    
+    var userfound= false;
+    for (var i in usernames) {
+      if(usernames[i] == msg[0]){
+        userfound = true;
+      }
+    }
+    if(socket.name == null && userfound){
+      socket.name = msg[0];
+      users[msg[0]] = socket;
+    }
     if (msg === "/list") {
       socket.emit('list users', usernames);
     } else {
@@ -262,7 +279,7 @@ io.on('connection', function (socket) {
       } else {
         console.log('Chat: ' + socket.name + ': ' + msg);
         var toneParams = {
-          'tone_input': {'text': msg},
+          'tone_input': {'text': msg[1]},
           'content_type': 'application/json'
         }
         toneAnalyzer.tone(toneParams, (err, response) => {
@@ -274,8 +291,8 @@ io.on('connection', function (socket) {
               feeling =  " ("+ response.document_tone.tones[0].tone_id+ ")";
             }
           }
-          msg = msg + feeling;
-          io.emit('chat message', [socket.name, msg, time()]);
+          msg[1] = msg[1] + feeling;
+          io.emit('chat message', [socket.name, msg[1], time()]);
         });
       }
     }

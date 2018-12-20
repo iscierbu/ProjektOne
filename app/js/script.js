@@ -98,7 +98,6 @@ $(function () {
         $('#picInput').val("");
       }
    }else if ($('#m').val().length < 1) {
-
     } else {
       $('#m').val($('#m').val().split("<").toString());
       $('#m').val($('#m').val().split(">").toString());
@@ -110,7 +109,7 @@ $(function () {
         check = [$('#usrnme').text(), private, $('#m').val()];
         socket.emit('priv message', check);
       } else {
-        socket.emit('chat message', $('#m').val());
+        socket.emit('chat message', [$('#usrnme').text(),$('#m').val()]);
       }
       $('#m').val('');
     }
