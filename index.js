@@ -17,11 +17,11 @@ let port = process.env.PORT || 3000;
 
 
 
-let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
-let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+//let pub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
+//let sub = redis.createClient('14307', 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" });
 
-io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
-//client.subscribe('login','regist','priv message','chat message','disconnect');
+//io.adapter(redisAdapter({ pubClient: pub, subClient: sub }));
+io.adapter(redisAdapter({ host: 'redis-14307.c135.eu-central-1-1.ec2.cloud.redislabs.com', port:  14307, auth_pass: "OehEHpoDmOdoTLvjdr2AocF7VcBnGx2C" }));
 
 //security
 app.use(function(req, res, next) {
