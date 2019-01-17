@@ -357,7 +357,7 @@ function checkInstances(username, socket){
     }
   }
   console.log(userfound);
-  if(socket.name == undefined && userfound){
+  if(socket.name == undefined && userfound || socket.name == null && userfound ){
     socket.name = username;
     users[username] = socket;
   }
